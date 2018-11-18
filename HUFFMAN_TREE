@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct node {
+	node *left, *right;
+	int weight;
+	char c;
+}*root;
+char s[100];
+node *a[100];
+int n;
+void Insert(node *num, int location)
+{
+	int parentnode;
+	while (location > 0)
+	{
+		parentnode = (location - 1) / 2;
+		if (num->weight >= a[parentnode]->weight)
+		{
+			a[location] = num;
+			return;
+		}
+		a[location] = a[parentnode];
+		location = parentnode;
+	}
+	a[0] = num;
+}
+void Delete(node *num)
+{
+	int left, right, i, parentnode;
+
+	for (i = 0; i < n; i++) {
+		if (num->c == a[i]->c)
+			break;
+	}
+	if (num->c != a[i]->c)
+	{
+		printf("%d not found in heap list\n", num->c);
+		return;
+	}
+	a[i] = a[n - 1];
+	n = n - 1;
+	parentnode = (i - 1) / 2;
+	if (a[i]->weight < a[parentnode]->weight)
+	{
+		Insert(a[i], i);
+		return;
+	}
+	left = 2 * i + 1; 
+	right = 2 * i + 2;
+	while (right < n)
+	{
+		if (a[i]->weight <= a[left]->weight && a[i]->weight <= a[right]->weight)
+			return;
+		else
+		{
+			if (a[left]->weight <= a[right]->weight) {
+				node *temp = a[i];
+				a[i] = a[left];
+				a[left] = temp;
+				i = left;
+			}
+			else {
+				node *temp = a[i];
+				a[i] = a[right];
+				a[right] = temp;
+				i = right;
+			}
+		}
+		left = 2 * i + 1;
+		right = 2 * i + 2;
+	}
+	if (left == n - 1 && a[i]->weight>a[left]->weight) {
+		node *temp = a[i];
+		a[i] = a[left];
+		a[left] = temp;
+	}
+}
+void display(node *root,int p) {
+	if (root->c != '$') {
+		s[p] = '\0';
+		printf("\n%c \n%s", root->c, s);
+		return;
+	}
+	++p;
+	s[p - 1] = '0';
+	display(root->left,p);
+	s[p - 1] = '1';
+	display(root->right,p);
+}
+int main()
+{
+	root = NULL;
+	int choice,N;
+	node *num;
+	n = 0;
+	printf("Enter no of elements: ");
+	scanf("%d", &N);
+	printf("Enter Character and their weight\n");
+	for (int i = 0; i < N; ++i) {
+		node *temp = (node*)malloc(sizeof(node));
+		printf("Enter Character and weight: ");
+		scanf("\n%c %d", &temp->c, &temp->weight);
+		temp->left = temp->right = NULL;
+		Insert(temp, n);
+		n = n + 1;
+	}
+	while (n > 1) {
+		node *p1 = a[0];
+		Delete(a[0]);
+		node *p2 = a[0];
+		Delete(a[0]);
+		node *temp = (node*)malloc(sizeof(node));
+		temp->weight = p1->weight + p2->weight;
+		temp->c = '$';
+		temp->left = p1;
+		temp->right = p2;
+		Insert(temp, n);
+		n = n + 1;
+		if (n == 1) {
+			root = temp;
+		}
+	}
+	display(root, 0);
+	return 0;
+}
