@@ -1,44 +1,110 @@
 #include <stdio.h>
-#include <stdlib.h>
-int a[100];
-int n;
-void maxheapify(int i, int n)
+int a[100], n;
+void Display()
 {
-	int temp, largest, left, right;
-	left = (2 * i + 1);
-	right = ((2 * i) + 2);
-	if (left >= n)
+	int i;
+	if (n == 0)
+	{
+		printf("EMPTY HEAP \n");
 		return;
-	else {
-		if (left < n && a[left] > a[i])
-			largest = left;
-		else
-			largest = i;
-		if (right < n && a[right] > a[largest])
-			largest = right;
-		if (largest != i) {
-			temp = a[i];
-			a[i] = a[largest];
-			a[largest] = temp;
-			maxheapify(largest, n);
+	}
+	for (i = 0; i < n; i++)
+		printf("%d ", a[i]);
+	printf("\n");
+}
+
+void Insert(int num, int location)
+{
+	int parentnode;
+	while (location > 0)
+	{
+		parentnode = (location - 1) / 2;
+		if (num <= a[parentnode])
+		{
+			a[location] = num;
+			return;
 		}
+		a[location] = a[parentnode];
+		location = parentnode;
+	}
+	a[0] = num;
+}
+void Delete(int num)
+{
+	int left, right, i, temp, parentnode;
+
+	for (i = 0; i < n; i++) {
+		if (num == a[i])
+			break;
+	}
+	if (num != a[i])
+	{
+		printf("%d not found in heap list\n", num);
+		return;
+	}
+	a[i] = a[n - 1];
+	n = n - 1;
+	parentnode = (i - 1) / 2;
+	if (a[i] > a[parentnode])
+	{
+		Insert(a[i], i);
+		return;
+	}
+	left = 2 * i + 1; 
+	right = 2 * i + 2;
+	while (right < n)
+	{
+		if (a[i] >= a[left] && a[i] >= a[right])
+			return;
+		if (a[right] <= a[left])
+		{
+			temp = a[i];
+			a[i] = a[left];
+			a[left] = temp;
+			i = left;
+		}
+		else
+		{
+			temp = a[i];
+			a[i] = a[right];
+			a[right] = temp;
+			i = right;
+		}
+		left = 2 * i + 1;
+		right = 2 * i + 2;
+	}
+	if (left == n - 1 && a[i]) {
+		temp = a[i];
+		a[i] = a[left];
+		a[left] = temp;
 	}
 }
 int main()
 {
-	int i;
-	printf("Enter no of elements in heap: ");
-	scanf("%d", &n);
-	printf("Enter elements\n");
-	for (i = 0; i < n; i++) {
-		scanf("%d", &a[i]);
-	}
-	for (i = n / 2; i >= 0; i--) {
-		maxheapify(i, n);
-	}
-	printf("Heap: \n");
-	for (i = 0; i < n; i++) {
-		printf("%d\n", a[i]);
-	}
+	int choice, num;
+	n = 0;
+	do{
+		printf("1.Insert the element \n");
+		printf("2.Delete the element \n");
+		printf("3.Display all elements \n");
+		printf("0.Quit \n");
+		scanf("%d", &choice);
+		switch (choice)
+		{
+			case 1:
+				printf("Enter the element to be inserted to the list : ");
+				scanf("%d", &num);
+				Insert(num, n);
+				n = n + 1;
+				break;
+			case 2:
+				printf("Enter the elements to be deleted from the list: ");
+				scanf("%d", &num);
+				Delete(num);
+				break;
+			case 3:
+				Display();
+		}
+	} while (choice != 0);
 	return 0;
 }
