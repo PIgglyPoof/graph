@@ -73,7 +73,7 @@ void Delete(int num)
 		left = 2 * i + 1;
 		right = 2 * i + 2;
 	}
-	if (left == n - 1 && a[i]) {
+	if (left == n - 1 && a[i]<left) {
 		temp = a[i];
 		a[i] = a[left];
 		a[left] = temp;
